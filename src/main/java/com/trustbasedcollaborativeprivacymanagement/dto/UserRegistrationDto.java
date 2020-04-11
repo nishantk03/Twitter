@@ -37,11 +37,12 @@ public class UserRegistrationDto {
     @Column(name = "Password", nullable = false)
     private String password;
 
-    @Column(name = "IsAdmin")
-    private Boolean isAdmin;
-
     @Column(name = "Follower")
     private String follower;
 
     private Boolean isLoggedIn;
+
+    @Column(name = "Pic")
+    @Lob
+    private String pic;
 }

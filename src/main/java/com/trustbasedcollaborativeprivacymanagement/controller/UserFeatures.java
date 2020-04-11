@@ -8,10 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/userfeatures")
+@CrossOrigin
 public class UserFeatures {
 
     @Autowired
@@ -19,12 +22,15 @@ public class UserFeatures {
 
     @ApiOperation(value = "Compose tweet", notes = "Compose tweet", produces = MediaType.APPLICATION_JSON_VALUE)
     @PostMapping(value = "/composeTweet", produces = "application/json")
-    public String composeTweet(@RequestBody ComposeTweet tweets) {
+    public List<String> composeTweet(@RequestBody ComposeTweet tweets) {
+        List<String> list = new ArrayList<>();
         if (tweets.getTweet() != null && tweets.getUsername() != null) {
             composeTweetRepository.save(tweets);
-            return SocialConstants.TWEET_CREATED.getKey();
+            list.add(SocialConstants.TWEET_CREATED.getKey());
+            return list;
         } else {
-            return SocialConstants.TWEET_FAILED.getKey();
+            list.add(SocialConstants.TWEET_FAILED.getKey());
+            return list;
         }
     }
 
@@ -42,6 +48,15 @@ public class UserFeatures {
         return composeTweetRepository.findByUsername(username);
     }
 
+    @ApiOperation(value = "Delete tweets")
+    @GetMapping(value = "/deleteTweets", produces = "application/json")
+    public List<String> deleteTweets(@RequestParam Integer id) {
+        Optional<ComposeTweet> composeTweet = composeTweetRepository.findById(id);
+        composeTweetRepository.delete(composeTweet.get());
+        List<String> list = new ArrayList<>();
+        list.add("Tweet deleted");
+        return list;
+    }
 
 
 }

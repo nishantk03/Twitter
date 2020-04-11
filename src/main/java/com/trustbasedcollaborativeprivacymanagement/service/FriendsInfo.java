@@ -35,6 +35,12 @@ public class FriendsInfo {
         return dto.stream().filter(data -> data.getFollower().contains(username)).collect(Collectors.toList());
     }
 
+    public List getAllUsers() {
+        List<UserRegistrationDto> dto = userRegistrationDtoRepository.findAll();
+
+        return dto;
+    }
+
     @Transactional
     public void addFollower(String toFollow, String username) {
         Optional<UserRegistrationDto> dto = userRegistrationDtoRepository.findById(username);

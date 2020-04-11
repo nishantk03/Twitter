@@ -15,6 +15,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")
+@CrossOrigin
 public class UserController {
 
     @Autowired
@@ -22,13 +23,16 @@ public class UserController {
 
     @ApiOperation(value = "User registration", notes = "Register new user", produces = MediaType.APPLICATION_JSON_VALUE)
     @PostMapping(value = "/registerUser", produces = "application/json")
-    public String registerUser(@RequestBody UserRegistrationDto registrationDto) {
+    public List<String> registerUser(@RequestBody UserRegistrationDto registrationDto) {
         Optional<UserRegistrationDto> userName = userRegistrationDtoRepository.findById(registrationDto.getUserName());
+        List<String> list = new ArrayList<>();
         if (!userName.isPresent()) {
             UserRegistrationDto dto = userRegistrationDtoRepository.save(registrationDto);
-            return SocialConstants.USER_CREATED + " : " + dto.getUserName();
+            list.add(SocialConstants.USER_CREATED.getKey());
+            return list;
         } else {
-            return SocialConstants.USER_NOT_AVA.getKey();
+            list.add(SocialConstants.USER_NOT_AVA.getKey());
+            return list;
         }
     }
 
@@ -64,6 +68,14 @@ public class UserController {
             userDetails.add(userDetails1);
         });
         return userDetails;
+    }
+
+    @ApiOperation(value = "Get selected users", notes = "Get selected users", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping("/getSelectedUsers")
+    public List<UserRegistrationDto> getUsers(@RequestBody List<String> userName) {
+        List<UserRegistrationDto> registrationDtos = userRegistrationDtoRepository.findByUserNameIn(userName);
+
+        return registrationDtos;
     }
 
 }
